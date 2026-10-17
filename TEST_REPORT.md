@@ -19,6 +19,6 @@
 
 - Attempted browser automation was blocked by an administrator policy when navigating to the local website; a separate headless Chromium screenshot also did not complete. Therefore, rendered browser screenshots, interactive click-through tests and visual checks at 320px, 375px, 414px, 768px, 1024px, 1440px and 1920px are **not claimed as passed**. Please review in VS Code Live Server and on a phone before launch.
 - No live DNS/HTTPS/redirect checks, production HTTP status checks, Google Search Console checks, Google Business Profile checks, Lighthouse score or Core Web Vitals measurements were performed.
-- External web-font loading depends on internet access and was not verified. No remote stock photos are hotlinked; bundled SVG illustrations are clearly identified as illustrative placeholders.
+- Remote stock photography and web fonts need internet access and were not verified for availability; local SVG illustrations are provided as image fallbacks.
 - The WhatsApp and phone/email actions remain inactive until real public business details are configured in `assets/js/config.js`.
 - Form submissions are not stored on a server. Without a configured WhatsApp number, the form prepares a message for copying and explicitly reports that it has not been sent or saved.
