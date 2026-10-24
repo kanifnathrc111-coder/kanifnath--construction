@@ -36,3 +36,14 @@ GitHub Pages has no server redirects. `projects.html` is a small redirect page t
 - Photos: copy them into this same folder and add one line each in `gallery-manifest.js` (instructions are at the top of that file).
 - Structured data: once the phone/email are public you may add `"telephone"` and `"email"` to the Organization block in each page head (search `"@type": "Organization"`). Only with verified details.
 - The `.md` documents are public on GitHub Pages. Delete them from the repository if you do not want that.
+
+## Deploying this version (existing GitHub Pages setup)
+1. Unzip. The ZIP has no outer folder: `index.html`, `CNAME` and all files are at its root.
+2. Back up first: in the repository, create a branch (e.g. `backup-before-oct24`) from main.
+3. Copy every file from the ZIP into the repository root, replacing existing files. Keep `CNAME` (it holds `kanifnathconstruction.com`) and `.nojekyll`. Commit and push to `main`; Pages rebuilds in a minute or two.
+4. After it is live, check: https://kanifnathconstruction.com/ , /contact.html, /ucr-stone-wall.html, /sitemap.xml, /robots.txt. In Google Search Console, resubmit sitemap.xml.
+5. Contact details live in two places: `config.js` (used by buttons and forms) and plain text in the footer, contact page, about page and structured data of the HTML files. If a number or the email changes, change `config.js` and search the HTML files for the old value.
+Rollback: revert the commit, or restore the backup branch.
+
+## 24 Oct 2026 addendum
+Upload all files at the repository root (same as before; `.nojekyll` and `CNAME` included). New files: `barlow-condensed-700.woff2`, `projects.html`, `AUDIT_SUMMARY.md`. After deploying, open `/projects.html`, `/quote.html` and the home page on a phone, and submit `sitemap.xml` in Search Console. Keep a copy of your previous ZIP as the backup.
