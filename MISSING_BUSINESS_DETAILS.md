@@ -37,3 +37,16 @@ The website now uses your original logo (`kanifnath-logo.png`, the artwork of `i
 
 ## E. Accounts and access
 Domain registrar login (DNS), GitHub account/repository name, Google account for Search Console, Google Business Profile eligibility (needs a verifiable address or service-area setup).
+
+## Update 24 Oct 2026
+Now supplied and entered: address, two mobile numbers, email, GSTIN (GSTIN not independently verified by this project).
+Still needed: which of the two numbers is on WhatsApp (the WhatsApp button still uses 9325503934); confirm "24/7" business hours; whether the address may be shown publicly as a business premises (needed for Google Business Profile); everything in sections C and D above (real photos, manufacturer/supplier role, specifications, service area, standards, MOQ/delivery terms, founding year).
+
+## Owner actions after the 24 Oct 2026 redesign
+1. **Real photographs** of your gabion, UCR wall and labour work: add them via `gallery-manifest.js`; they appear on Projects and Gallery automatically. This is the single biggest credibility upgrade.
+2. **Form delivery**: create a free Formspree (or similar) form and put its URL in `formEndpoint` in `config.js`; test one enquiry. Until then the form only prepares a WhatsApp/e-mail message.
+3. Confirm which number is on WhatsApp (currently 9325503934) and whether the address may be shown as business premises (needed for Google Business Profile).
+4. Provide a corrected logo (singular CONSTRUCTION, >=1000 px or SVG).
+5. Confirm image rights for the illustrations, or replace them.
+6. Fill the "Our confirmed offering" specification tables and confirm manufacturer/supplier role, service area, MOQ/delivery terms (section D above).
+7. Optional: GA4 id in `analyticsId` (add a privacy notice first).
