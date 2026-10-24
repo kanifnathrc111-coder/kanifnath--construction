@@ -6,7 +6,7 @@ Domain in the files: https://kanifnathconstruction.com/ (**not verified live** -
 
 ## ONE folder, no sub-folders
 Every file sits directly in this folder:
-- `index.html` and the other `*.html` pages (24 indexable pages + `404.html` + `projects.html`, a redirect to the gallery)
+- `index.html` and the other `*.html` pages (25 indexable pages incl. `projects.html`, plus `404.html`)
 - `style.css` - the ONE stylesheet; brand colours are the variables at the top (`:root`)
 - `site.js` - menu, forms, gallery and photo viewer
 - `config.js` - **the one place for phone / WhatsApp / email / location / logo path**
