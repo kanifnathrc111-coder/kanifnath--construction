@@ -16,6 +16,26 @@
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((cfg.email || '').trim());
   const waUrl = (msg) => `https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`;
 
+  /* Analytics-ready, privacy-conscious: nothing is sent anywhere unless config.analyticsId is set (GA4) or the page already defines gtag/dataLayer. */
+  const track = (name, params) => {
+    try { if (typeof window.gtag === 'function') window.gtag('event', name, params || {}); else if (Array.isArray(window.dataLayer)) window.dataLayer.push({ event: name, ...(params || {}) }); } catch (_) { /* never break the page */ }
+  };
+  const setupAnalytics = () => {
+    const id = (cfg.analyticsId || '').trim();
+    if (/^G-[A-Z0-9]{6,}$/.test(id) && !navigator.doNotTrack) {
+      const sc = document.createElement('script'); sc.async = true; sc.src = `https://www.googletagmanager.com/gtag/js?id=${id}`; document.head.appendChild(sc);
+      window.dataLayer = window.dataLayer || []; window.gtag = function () { window.dataLayer.push(arguments); };
+      window.gtag('js', new Date()); window.gtag('config', id, { allow_google_signals: false, allow_ad_personalization_signals: false });
+    }
+    document.addEventListener('click', (e) => {
+      const a = e.target.closest && e.target.closest('a[href]'); if (!a) return;
+      const h = a.getAttribute('href') || '';
+      if (h.startsWith('tel:')) track('click_call', { number: h.slice(4) });
+      else if (h.startsWith('mailto:')) track('click_email');
+      else if (h.indexOf('wa.me/') > -1) track('click_whatsapp');
+    });
+  };
+
   const toast = (message) => {
     let el = $('#site-toast');
     if (!el) { el = document.createElement('div'); el.id = 'site-toast'; el.className = 'toast'; el.setAttribute('role', 'status'); el.setAttribute('aria-live', 'polite'); document.body.appendChild(el); }
@@ -34,7 +54,12 @@
     });
     $$('[data-phone-link]').forEach((a) => {
       if (!phoneValid) return;
-      a.href = `tel:${phoneTel}`; a.textContent = cfg.phoneDisplay || phoneRaw; unhideWithParent(a);
+      a.href = `tel:${phoneTel}`; if (!a.children.length) a.textContent = a.textContent.startsWith('Call') ? `Call ${cfg.phoneDisplay || phoneRaw}` : (cfg.phoneDisplay || phoneRaw); unhideWithParent(a);
+    });
+    const phone2 = (cfg.secondPhoneE164 || '').replace(/[^+\d]/g, '');
+    $$('[data-phone2-link]').forEach((a) => {
+      if (phone2.replace(/\D/g, '').length < 8) return;
+      a.href = `tel:${phone2}`; if (!a.children.length) a.textContent = a.textContent.startsWith('Call') ? `Call ${cfg.secondPhoneDisplay || phone2}` : (cfg.secondPhoneDisplay || phone2); unhideWithParent(a);
     });
     $$('[data-email-link]').forEach((a) => {
       if (!emailValid) return;
@@ -98,6 +123,9 @@
   };
   const setupForms = () => {
     $$('[data-enquiry-form]').forEach((form) => {
+      if (/^https:\/\//.test((cfg.formEndpoint || '').trim())) { $$('[data-form-note]', form.parentElement).forEach((n) => { n.textContent = 'Your enquiry is sent to Kanifnath Construction when you press the button, and used only to reply to you. WhatsApp and email options remain available afterwards.'; }); $$('[type="submit"]', form).forEach((b) => { b.firstChild.textContent = 'Send Enquiry '; }); }
+      const trap = document.createElement('div'); trap.className = 'hp-field'; trap.setAttribute('aria-hidden', 'true');
+      trap.innerHTML = '<label>Leave this field empty<input type="text" name="company_website" tabindex="-1" autocomplete="off"></label>'; form.appendChild(trap);
       const feedback = $('[data-form-feedback]', form.parentElement);
       $$('input,select,textarea', form).forEach((f) => f.addEventListener('input', () => {
         if (f.getAttribute('aria-invalid') === 'true' && f.checkValidity()) { f.removeAttribute('aria-invalid'); const e = document.getElementById(`${f.id}-error`); if (e) e.remove(); }
@@ -109,6 +137,7 @@
         const invalid = $$('input,select,textarea', form).filter((f) => !f.checkValidity());
         if (invalid.length) { invalid.forEach(showError); invalid[0].focus(); toast('Please complete the highlighted fields.'); return; }
         if (!feedback) return;
+        const hp = form.querySelector('.hp-field input'); if (hp && hp.value) return; /* bot filled the hidden field: do nothing */
         const message = buildMessage(form);
         const status = $('[data-form-status]', feedback); const preview = $('[data-enquiry-preview]', feedback);
         const waBtn = $('[data-form-whatsapp]', feedback); const mailBtn = $('[data-form-email]', feedback); const copyBtn = $('[data-copy-enquiry]', feedback);
@@ -116,6 +145,21 @@
         if (waBtn) { waBtn.hidden = !waValid; if (waValid) { waBtn.href = waUrl(message); waBtn.target = '_blank'; waBtn.rel = 'noopener noreferrer'; } }
         if (mailBtn) { mailBtn.hidden = !emailValid; if (emailValid) mailBtn.href = `mailto:${cfg.email.trim()}?subject=${encodeURIComponent('Quotation enquiry')}&body=${encodeURIComponent(message)}`; }
         if (copyBtn) copyBtn.onclick = async () => { try { await navigator.clipboard.writeText(message); toast('Enquiry copied to clipboard.'); } catch (_) { preview.focus(); toast('Select and copy the text shown.'); } };
+        const endpoint = (cfg.formEndpoint || '').trim();
+        const finish = (html) => { status.innerHTML = html; feedback.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'nearest' }); };
+        if (/^https:\/\//.test(endpoint)) {
+          /* Delivery service configured: "sent" is shown ONLY if the service answers with success. */
+          const submit = $('[type="submit"]', form); if (submit) submit.disabled = true;
+          const payload = { _subject: 'Website quotation enquiry', page: location.href, message };
+          Object.keys(LABELS).forEach((k) => { const v = (new FormData(form).get(k) || '').toString().trim(); if (v) payload[k] = v; });
+          finish('<strong>Sending your enquiry&hellip;</strong>');
+          fetch(endpoint, { method: 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+            .then((r) => { if (!r.ok) throw new Error(String(r.status)); track('enquiry_sent', { service: (new FormData(form).get('service') || '').toString() }); form.reset(); finish('<strong>Your enquiry has been sent.</strong><p>Thank you. We will contact you on the number you gave. A copy of what you sent is shown below.</p>'); })
+            .catch(() => { feedback.classList.add('error'); finish('<strong>Your enquiry could not be sent.</strong><p>Please use the WhatsApp or email button below, or call us. Nothing has been received yet.</p>'); })
+            .finally(() => { if (submit) submit.disabled = false; });
+          return;
+        }
+        track('enquiry_prepared', { service: (new FormData(form).get('service') || '').toString() });
         let html;
         if (waValid) {
           const w = window.open(waUrl(message), '_blank'); if (w) { try { w.opener = null; } catch (_) { } }
@@ -127,8 +171,7 @@
         } else {
           html = '<strong>Your enquiry is ready, but not sent.</strong><p>Direct contact options are not yet available on this website. Copy the text below and send it to us when contact details are published on the <a href="contact.html">contact page</a>.</p>';
         }
-        status.innerHTML = html;
-        feedback.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'nearest' });
+        finish(html);
       });
     });
   };
@@ -226,8 +269,17 @@
 
   const setupYear = () => { $$('[data-current-year]').forEach((el) => { el.textContent = new Date().getFullYear(); }); };
 
+  const setupPrefill = () => {
+    const sel = document.getElementById('service');
+    if (!sel || !sel.form || !sel.form.hasAttribute('data-enquiry-form')) return;
+    let want = '';
+    try { want = (new URLSearchParams(location.search).get('service') || '').trim().toLowerCase(); } catch (e) { return; }
+    if (!want) return;
+    const opt = Array.from(sel.options).find((o) => o.text.trim().toLowerCase() === want);
+    if (opt) sel.value = opt.value;
+  };
   document.addEventListener('DOMContentLoaded', () => {
-    setupContact(); setupLogo(); setupMenu(); setupForms(); setupGallery(); setupYear();
+    setupAnalytics(); setupPrefill(); setupContact(); setupLogo(); setupMenu(); setupForms(); setupGallery(); setupYear();
     document.documentElement.classList.add('reveal-ready');
   });
 })();
