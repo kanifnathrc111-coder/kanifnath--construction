@@ -1,5 +1,15 @@
 # Changelog
 
+## 24 Oct 2026 - Premium redesign (third pass)
+- **Design system**: new palette exactly as briefed - Deep Maroon #8B0D0D, White, Charcoal #171717, Light Grey #F4F5F7, Gold #D4A64A - defined once as CSS variables in `style.css`. Self-hosted Barlow Condensed (headings, OFL licence) + Inter (text). Gold is used for rules, buttons on dark areas and highlights, never as small text on white.
+- **Header/footer** rebuilt and rolled out to all 26 pages by script: charcoal top bar with BOTH mobile numbers, gold-underlined active page, new "Projects" link, UCR Stone Wall and Gabion Labour Supply promoted in the Services menu; charcoal footer with maroon/gold rules.
+- **Homepage** restructured around the four priorities (gabion box supply, gabion wall construction, gabion labour supply, UCR stone wall): new hero headline, four service tiles, a facts strip (address, contact, GSTIN, written quotations - all owner-supplied), a dedicated UCR stone wall section, FAQ block, call buttons. Nothing invented.
+- **New Projects page** (`projects.html`, now indexable, in sitemap): six project types, what defines the scope, what to send; shows real photographs automatically from `gallery-manifest.js` once added. No fake projects.
+- **Enquiry**: optional `formEndpoint` in `config.js` - when set, the form POSTs and shows "sent" ONLY on HTTP success (error message otherwise); hidden honeypot field against bots; privacy-conscious analytics hooks (`analyticsId`, off by default; click-to-call / WhatsApp / email / enquiry events). Second phone number now driven by `config.js`.
+- **Honesty**: the claim-heavy "Labour Supply" poster image was replaced by a claim-free illustration; card images are labelled "Reference image".
+- Floating WhatsApp button is now a compact round icon (label on hover) so it no longer covers content.
+- Fixed: gallery meta description too long; sitemap now has 25 URLs (Projects added), UCR page priority raised.
+
 ## 2026-10-19 - Professional maroon redesign
 
 ### Branding - original logo kept
@@ -56,3 +66,20 @@ URLs, page text and metadata, structured data, `robots.txt`, `CNAME`, form behav
 - Updated the existing logo artwork presentation to use the exact singular business name “KANIFNATH CONSTRUCTION”.
 - Retained the original KT monogram artwork from the existing logo and added the tagline “LABOUR SUPPLIER & DEVELOPERS” in a horizontal wordmark matching the supplied quotation header.
 - Removed the duplicated separate company-name text beside the logo and adjusted responsive logo widths for desktop and mobile.
+
+## 24 Oct 2026 - SEO and enquiry-flow update (second pass)
+- `ucr-stone-wall.html`: rewritten as a full UCR wall construction page (meaning of UCR, UCR vs coursed vs dry rubble, uses, build process, quality points, quotation checklist, rate factors with no fixed rates, 6 FAQs). New title, description, H1, Service and FAQ schema. URL unchanged.
+- `gabion-labour-supplier.html`: keyword-focused title, H1 and description; labour-by-project-size section; supplier-vs-contractor FAQ.
+- 14 service/product pages: "Request a Quote" buttons now open `quote.html?service=...` with the matching requirement preselected.
+- `site.js`: `setupPrefill()` reads `?service=` and preselects the matching option; unknown values are ignored.
+- All pages with Organization schema: added `logo` and `telephone` (number already public in config.js).
+- `index.html`: favicon links made relative.
+- `sitemap.xml`: lastmod updated for changed pages only.
+- Added `SEO_COMPETITOR_AUDIT.md` and `SEO_RESEARCH_AND_GAP_REPORT.md`.
+
+## 24 Oct 2026 - official business details (third pass)
+Details supplied by the owner: KANIFNATH CONSTRUCTION, Kalewadi, Tal. Daund, Dist. Pune - 413801; mobiles 9763739384 and 9325503934; email kanifnathr.c111@gmail.com; GSTIN 27DHBPC7233L1ZB. Entered exactly as supplied. GSTIN has NOT been independently verified.
+- Modified: `config.js` (email, address, second phone, GSTIN, display format of the first phone; WhatsApp number unchanged), `site.js` (none this pass), `style.css` (footer contact block), `contact.html` (static address, both phones as `tel:` links, email as `mailto:` link, GSTIN), `about.html` (business details), `privacy.html` (contact email), `sitemap.xml` (all lastmod), and all 25 pages with a footer (footer contact block; duplicate script-filled phone/email/base links removed).
+- Structured data on every page: Organization is now also typed GeneralContractor, with address, both telephones, email, taxID, logo.
+- Added files: none this pass. Removed files: none.
+- Not applicable: this project contains no quotation/invoice templates, PDF export, Firebase, ERP pages, manifest or service worker, so nothing there could be updated.
