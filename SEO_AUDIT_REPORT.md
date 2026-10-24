@@ -36,3 +36,7 @@ Nothing here claims the site is live, indexed or ranking. No search-volume or ra
 6. Page descriptions: home is 173 characters (slightly long).
 7. Public `.md` files on GitHub Pages (see DEPLOYMENT_GUIDE).
 8. Core Web Vitals / PageSpeed not measured (no internet).
+
+## 24 Oct 2026 - redesign pass
+Done: homepage title/description now lead with gabion box supplier + UCR wall contractor; H1 names gabion box, gabion walls and UCR stone wall; Projects page added to sitemap (25 URLs); UCR/labour/wall pages priority 0.9; internal links from nav, footer, homepage tiles and Projects cards to every service; JSON-LD unchanged and still valid on all pages.
+NOT done / cannot be done by me: Search Console submission, indexing, ranking (no guarantee is made). Follow GOOGLE_SEARCH_CONSOLE_GUIDE.md. Recommended next: verified Google Business Profile, genuine listings (IndiaMART, JustDial, local contractor directories), real project photos with descriptive file names, and genuine customer reviews - never purchased ones.
