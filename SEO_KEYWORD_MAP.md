@@ -1,4 +1,4 @@
-# SEO keyword map (updated 17 Oct 2026)
+# SEO keyword map (updated  24Oct 2026)
 
 **No search volumes, difficulty scores or rankings are included - none were measured.** These are target search
 intents. One primary intent per page; secondary phrases are used naturally in headings and body text, never repeated
